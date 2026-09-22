@@ -1,0 +1,17 @@
+project: default
+source:
+  repoURL: https://github.com/fuyiran111/Hellok8s.git
+  path: ./
+  targetRevision: HEAD
+destination:
+  server: https://kubernetes.default.svc
+  namespace: myapp
+syncPolicy:
+  automated:
+    prune: true
+    selfHeal: true
+    allowEmpty: false
+    enabled: true
+  syncOptions:
+    - Validate=false
+    - CreateNamespace=true
