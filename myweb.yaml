@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-service-v4
+  labels:
+    app: web-deployment
+spec:
+  selector:
+    app: web-deployment
+    version: v4
+  ports:
+  - name: http-metrics
+    protocol: TCP
+    port: 8090
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: web-deployment
+  name: web-deployment-v4
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-deployment
+      version: v4
+  template:
+    metadata:
+      labels:
+        app: web-deployment
+        version: v4
+    spec:
+      containers:
+      - image: my-app:v3
+        name: web
+        ports:
+        - containerPort: 8080
+        env:
+        # 核心：通过环境变量把 K8s Service 的 DNS 域名传给 Python
+        - name: REDIS_URL
+          value: "redis://redis-service:6379/0"
+        - name: DATABASE_URL
+          value: "postgresql://postgres:5123@postgres-service:5432/postgres"
+        - name: APP_VERSION
+          value: "v4"
+        readinessProbe:
+          httpGet:
+            path: /healthz  # 别用根目录，用专门的健康检查接口
+            port: 8080
