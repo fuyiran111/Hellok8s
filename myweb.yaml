@@ -27,7 +27,7 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-  app: nginx
+    app: nginx
   ports:
   - protocol: TCP
     port: 8090        # Service 对外暴露的端口（供集群内部或 port-forward 使用）
